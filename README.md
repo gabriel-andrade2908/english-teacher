@@ -15,12 +15,24 @@ This is **Phase 0** of the plan: an invite-only prototype to test the teaching q
   - **Voice messages**: the microphone button records a message; it's transcribed, sent as text, and stays playable in the chat.
   - **Voice replies**: the speaker button in the header makes the teacher read every reply aloud, sentence by sentence while it arrives. Any reply can also be played with "Ouvir".
   - **Call**: the "Ligar" button opens a live voice conversation. The teacher listens, answers out loud in short sentences and listens again. The transcript and corrections stay in the chat.
-- **Local testing with Ollama**: set `AI_PROVIDER=ollama` to use a free local model instead of Claude.
+- **Local testing with Ollama**: a free local model instead of Claude, used automatically when there is no Anthropic API key (or with `AI_PROVIDER=ollama`).
 - **Cost controls**: invite codes, a daily message limit per tester (`DAILY_MESSAGE_LIMIT=0` turns it off), and token usage and estimated cost logged in the terminal for every AI call.
 
 ## Running it
 
 Requires Node.js 20 or newer.
+
+### Quick start (local mode, no setup)
+
+1. Install Ollama and download a model: see [Testing with a local model](#testing-with-a-local-model-ollama) below.
+2. `npm install`
+3. `npm run dev` and open http://localhost:3000
+
+Without a `.env.local` file, the app runs in **local mode**: there's no login, and since there's no Anthropic API key, it uses Ollama. To use Claude instead, create `.env.local` with just `ANTHROPIC_API_KEY=...` and restart.
+
+Local mode only applies to `npm run dev`. A production build (`npm run build` + `npm start`) always requires invite codes.
+
+### Full setup (invite codes, for sharing with testers)
 
 1. Copy `.env.example` to `.env.local` and fill it in:
    - `ANTHROPIC_API_KEY`: create one at [console.anthropic.com](https://console.anthropic.com) (add some credit first). Also set a monthly spend limit there as a safety net.
@@ -40,14 +52,12 @@ Requires Node.js 20 or newer.
 2. **Check that it's installed and running.** Open a new terminal and run `ollama --version`. On Windows and macOS, Ollama starts in the background after installation (look for the llama icon near the clock). If it isn't running, start the app or run `ollama serve` in a separate terminal.
 3. **Download a model.** `ollama pull qwen3:8b` (about 5 GB; it needs around 8 GB of free RAM or GPU memory). On a weaker computer, use `qwen3:4b` instead (about 2.5 GB).
 4. **Try it.** `ollama run qwen3:8b "Say hello in English"` should answer after a few seconds. Type `/bye` to leave if it opens a chat.
-5. **Point the app at Ollama.** Add this to `.env.local`:
+5. **Point the app at Ollama.** Without an `ANTHROPIC_API_KEY`, the app already uses Ollama: nothing to do. If you have a key but want Ollama anyway, add `AI_PROVIDER=ollama` to `.env.local`. Other optional settings:
    ```
-   AI_PROVIDER=ollama
-   # Optional, only if you changed the defaults:
+   # Only if you use another model (e.g. qwen3:4b) or changed Ollama's address:
    # OLLAMA_MODEL=qwen3:8b
    # OLLAMA_URL=http://localhost:11434
    ```
-   `ANTHROPIC_API_KEY` can stay empty in this mode.
 6. **Restart the app.** Stop `npm run dev` (Ctrl+C) and start it again: environment variables are only read at startup. Each AI call now logs `model=ollama/...` and `~$0 (local)` in the terminal.
 
 To go back to Claude, remove `AI_PROVIDER=ollama` from `.env.local` and restart.

@@ -8,6 +8,7 @@ const ChatApp = dynamic(() => import("./ChatApp"), {
   loading: () => <div className="flex flex-1 items-center justify-center text-muted">Carregando…</div>,
 });
 
-export function ChatAppLoader() {
-  return <ChatApp />;
+// canLogOut is false in local mode, where there is no login.
+export function ChatAppLoader({ canLogOut }: { canLogOut: boolean }) {
+  return <ChatApp canLogOut={canLogOut} />;
 }

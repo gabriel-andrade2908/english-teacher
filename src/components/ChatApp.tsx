@@ -92,7 +92,7 @@ function save(key: string, value: string) {
 let idCounter = 0;
 const newId = () => `m${Date.now()}-${idCounter++}`;
 
-export default function ChatApp() {
+export default function ChatApp({ canLogOut }: { canLogOut: boolean }) {
   const router = useRouter();
   const [settings, setSettings] = useState<Settings>(loadSettings);
   const [messages, setMessagesState] = useState<UiMessage[]>([]);
@@ -491,9 +491,11 @@ export default function ChatApp() {
           preferences={preferences}
           onPreferencesChange={updatePreferences}
         />
-        <button type="button" onClick={logout} className="mt-8 text-sm text-muted underline">
-          Sair
-        </button>
+        {canLogOut && (
+          <button type="button" onClick={logout} className="mt-8 text-sm text-muted underline">
+            Sair
+          </button>
+        )}
       </aside>
 
       <main className="flex min-w-0 flex-1 flex-col">

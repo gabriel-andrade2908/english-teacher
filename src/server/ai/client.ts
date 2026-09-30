@@ -1,8 +1,12 @@
 import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 
-// "anthropic" (default) or "ollama" to test with a free local model.
-export const AI_PROVIDER = process.env.AI_PROVIDER === "ollama" ? "ollama" : "anthropic";
+// "anthropic" or "ollama" (a free local model). Without AI_PROVIDER, Ollama is used when there's no
+// Anthropic API key, so the app runs with no setup.
+export const AI_PROVIDER =
+  process.env.AI_PROVIDER === "ollama" || (!process.env.AI_PROVIDER && !process.env.ANTHROPIC_API_KEY)
+    ? "ollama"
+    : "anthropic";
 
 // Reads ANTHROPIC_API_KEY from the environment (.env.local in development).
 export const anthropic = new Anthropic();

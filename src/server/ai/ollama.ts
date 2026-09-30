@@ -36,7 +36,8 @@ async function post(body: { options?: object } & Record<string, unknown>, signal
     });
   } catch (error) {
     if (signal?.aborted) throw error;
-    throw new Error(`Ollama is not reachable at ${OLLAMA_URL}. Is it running?`);
+    const why = process.env.AI_PROVIDER ? "" : " (Ollama is used because ANTHROPIC_API_KEY is not set.)";
+    throw new Error(`Ollama is not reachable at ${OLLAMA_URL}. Is it running?${why}`);
   }
   if (!response.ok) {
     const detail = await response.text().catch(() => "");

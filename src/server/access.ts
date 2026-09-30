@@ -36,6 +36,14 @@ function parseAccessCodes(): { tester: string; code: string }[] {
     .map(([tester, code]) => ({ tester: tester.trim(), code: code.trim() }));
 }
 
+// Local mode: `npm run dev` without ACCESS_CODES skips the login, so anyone can try the app on their own
+// computer with no setup. Production builds always require invite codes.
+export const LOCAL_TESTER = "local";
+
+export function isOpenAccess(): boolean {
+  return process.env.NODE_ENV !== "production" && parseAccessCodes().length === 0;
+}
+
 export function testerForCode(code: string): string | null {
   const match = parseAccessCodes().find((entry) => safeEqual(entry.code, code.trim()));
   return match?.tester ?? null;
@@ -47,6 +55,7 @@ export async function createAccessToken(tester: string): Promise<string> {
 
 // Returns the tester's name if the token is valid.
 export async function verifyAccessToken(token: string | undefined): Promise<string | null> {
+  if (isOpenAccess()) return LOCAL_TESTER;
   if (!token) return null;
   const dot = token.lastIndexOf(".");
   if (dot <= 0) return null;
